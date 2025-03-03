@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SideOne - Vinyl Bidding</title>
+    <link rel="icon" type="image/png" href="/images/vinylicon.png" />
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -45,6 +46,32 @@
       }
       .item button:hover {
         background-color: #218838;
+      }
+      .notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+        z-index: 1000;
+      }
+
+      .notification.success {
+        background-color: #4caf50;
+      }
+
+      .notification.error {
+        background-color: #f44336;
+      }
+
+      .notification.fade-out {
+        opacity: 0;
       }
       footer {
         text-align: center;
@@ -128,7 +155,7 @@
             artist: "The Rolling Stones",
             startingPrice: 170.0,
             currentBid: 190.0,
-            image: "exile-on-main.jpg",
+            image: "exile-on-main-st.jpg",
           },
           {
             id: 8,
@@ -148,11 +175,11 @@
           },
           {
             id: 10,
-            name: "Abbey Road",
+            name: "The Beatles (The White Album)",
             artist: "The Beatles",
             startingPrice: 150.0,
             currentBid: 180.0,
-            image: "abbey-road.jpg",
+            image: "beatles-white-album.jpg",
           },
           {
             id: 11,
@@ -284,7 +311,7 @@
           },
           {
             id: 27,
-            name: "King Of The Delta Blues Singers, Vol.1",
+            name: "King Of The Delta Blues Singers",
             artist: "Robert Johnson",
             startingPrice: 220.0,
             currentBid: 240.0,
@@ -372,7 +399,7 @@
           },
           {
             id: 38,
-            name: "The Anthology (1947-1972)",
+            name: "The Anthology: 1947-1972)",
             artist: "Muddy Waters",
             startingPrice: 250.0,
             currentBid: 270.0,
@@ -492,11 +519,11 @@
           },
           {
             id: 53,
-            name: "The Birth Of Soul: The Complete Atlantic Rhythm And Blues Recordings",
-            artist: "Ray Charles",
-            startingPrice: 150.0,
-            currentBid: 170.0,
-            image: "the-birth-of-soul.jpg",
+            name: "Paranoid",
+            artist: "Black Sabbath",
+            startingPrice: 120.0,
+            currentBid: 140.0,
+            image: "paranoid.jpg",
           },
           {
             id: 54,
@@ -888,15 +915,21 @@
         items.forEach((item) => {
           const itemDiv = document.createElement("div");
           itemDiv.classList.add("item");
+
           itemDiv.innerHTML = `
-                <h2>${item.name}</h2>
-                <div class="item-details">
-                    <p><strong>Artist:</strong> ${item.artist}</p>
-                    <p><strong>Starting Price:</strong> $${item.startingPrice}</p>
-                    <p><strong>Current Bid:</strong> $${item.currentBid}</p>
-                </div>
-                <button onclick="placeBid(${item.id})">Place Bid</button>
-            `;
+        <div class="item-details">
+          <!-- Album Cover -->
+          <img src="/images/${item.image}" alt="${item.name}" class="album-cover">
+          <!-- Vinyl Info -->
+          <div class="item-info">
+            <h2>${item.name}</h2>
+            <p><strong>Artist:</strong> ${item.artist}</p>
+            <p><strong>Starting Price:</strong> $${item.startingPrice}</p>
+            <p><strong>Current Bid:</strong> $${item.currentBid}</p>
+          </div>
+        </div>
+        <button onclick="placeBid(${item.id})">Place Bid</button>
+      `;
           itemsList.appendChild(itemDiv);
         });
       }
@@ -917,12 +950,30 @@
             // Save the updated items back to localStorage
             localStorage.setItem("items", JSON.stringify(items));
 
-            alert("Bid placed successfully!");
+            showNotification("✅ Bid placed successfully!", "success");
             fetchItems(); // Refresh the list of items after placing a bid
           } else {
-            alert("Bid must be higher than the current bid!");
+            showNotification(
+              "⚠️ Bid must be higher than the current bid!",
+              "error"
+            );
           }
         }
+      }
+
+      // FUNCTION TO SHOW A STYLED NOTIFICATION
+      function showNotification(message, type) {
+        const notification = document.createElement("div");
+        notification.classList.add("notification", type);
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        // Fade out after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          setTimeout(() => notification.remove(), 500);
+        }, 3000);
       }
 
       // FETCH AND DISPLAY ITEMS WHEN THE PAGE LOADS
