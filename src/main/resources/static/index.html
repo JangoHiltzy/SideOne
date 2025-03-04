@@ -49,27 +49,24 @@
       }
       .notification {
         position: fixed;
-        top: 20px;
+        top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        padding: 10px 20px;
+        padding: 20px 40px;
         border-radius: 5px;
-        font-size: 16px;
+        font-size: 24px;
         font-weight: bold;
         color: white;
         opacity: 1;
         transition: opacity 0.5s ease;
         z-index: 1000;
       }
-
       .notification.success {
         background-color: #4caf50;
       }
-
       .notification.error {
         background-color: #f44336;
       }
-
       .notification.fade-out {
         opacity: 0;
       }
@@ -917,46 +914,73 @@
           itemDiv.classList.add("item");
 
           itemDiv.innerHTML = `
-        <div class="item-details">
-          <!-- Album Cover -->
-          <img src="/images/${item.image}" alt="${item.name}" class="album-cover">
-          <!-- Vinyl Info -->
-          <div class="item-info">
-            <h2>${item.name}</h2>
-            <p><strong>Artist:</strong> ${item.artist}</p>
-            <p><strong>Starting Price:</strong> $${item.startingPrice}</p>
-            <p><strong>Current Bid:</strong> $${item.currentBid}</p>
-          </div>
-        </div>
-        <button onclick="placeBid(${item.id})">Place Bid</button>
-      `;
+    <div class="item-details">
+                <img src="/images/${item.image}" alt="${item.name}" class="album-cover">
+                <div class="item-info">
+                    <h2>${item.name}</h2>
+                    <p><strong>Artist:</strong> ${item.artist}</p>
+                    <p><strong>Starting Price:</strong> $${item.startingPrice}</p>
+                    <p><strong>Current Bid:</strong> $${item.currentBid}</p>
+                    <p><strong>Time Left:</strong> <span id="timer-${item.id}">Loading...</span></p>
+                </div>
+            </div>
+            <button id="bid-btn-${item.id}" onclick="placeBid(${item.id})">Place Bid</button>
+        `;
           itemsList.appendChild(itemDiv);
+          startCountdown(item.id, item.bidEndTime);
         });
+      }
+
+      // FUNCTION TO HANDLE THE COUNTDOWN TIMER
+      function startCountdown(itemId, bidEndTime) {
+        const timerElement = document.getElementById(`timer-${itemId}`);
+        const bidButton = document.getElementById(`bid-btn-${itemId}`);
+
+        function updateTimer() {
+          const now = new Date().getTime();
+          const timeLeft = bidEndTime - now;
+
+          if (timeLeft <= 0) {
+            timerElement.textContent = "Bidding Ended";
+            bidButton.disabled = true; // Disable the bid button
+            bidButton.style.opacity = "0.5"; // Make button look inactive
+            return;
+          }
+
+          // Convert time to minutes and seconds
+          const minutes = Math.floor(timeLeft / 60000);
+          const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+          timerElement.textContent = `${minutes}m ${seconds}s`;
+
+          setTimeout(updateTimer, 1000); // Update every second
+        }
+
+        updateTimer();
       }
 
       // FUNCTION TO HANDLE PLACING A BID
       function placeBid(itemId) {
         const bidAmount = prompt("Enter your bid amount:");
         if (bidAmount) {
-          // Get current items from localStorage
-          let items = JSON.parse(localStorage.getItem("items"));
-
-          // Find the vinyl item that the user is bidding on
+          let items = JSON.parse(localStorage.getItem("items")) || [];
           const item = items.find((item) => item.id === itemId);
-          if (item && parseFloat(bidAmount) > item.currentBid) {
-            // Update the item's current bid
-            item.currentBid = parseFloat(bidAmount);
 
-            // Save the updated items back to localStorage
-            localStorage.setItem("items", JSON.stringify(items));
+          if (item && new Date().getTime() < item.bidEndTime) {
+            if (parseFloat(bidAmount) > item.currentBid) {
+              item.currentBid = parseFloat(bidAmount);
+              localStorage.setItem("items", JSON.stringify(items));
 
-            showNotification("✅ Bid placed successfully!", "success");
-            fetchItems(); // Refresh the list of items after placing a bid
+              showNotification("✅ Bid placed successfully!", "success");
+              fetchItems(); // Refresh the list of items after placing a bid
+            } else {
+              showNotification(
+                "⚠️ Bid must be higher than the current bid!",
+                "error"
+              );
+            }
           } else {
-            showNotification(
-              "⚠️ Bid must be higher than the current bid!",
-              "error"
-            );
+            showNotification("❌ Bidding for this item has ended!", "error");
           }
         }
       }
