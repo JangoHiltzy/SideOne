@@ -1126,22 +1126,19 @@
                 item.highestBidder = user;
                 localStorage.setItem("items", JSON.stringify(items));
 
-                showBidNotification("✅ Bid placed successfully!", "success");
+                showNotification("✅ Bid placed successfully!", "success");
                 fetchItems();
               } else {
-                showBidNotification(
+                showNotification(
                   "⚠️ Bid must be higher than the current bid!",
                   "error"
                 );
               }
             } else {
-              showBidNotification(
-                "❌ Bidding for this item has ended!",
-                "error"
-              );
+              showNotification("❌ Bidding for this item has ended!", "error");
             }
           } else {
-            showBidNotification("⚠️ Please enter a valid bid amount!", "error");
+            showNotification("⚠️ Please enter a valid bid amount!", "error");
           }
 
           bidInputToast.remove();
@@ -1151,6 +1148,12 @@
           bidInputToast.remove();
         };
       }
+
+      // FUNCTION TO SET CURRENT USER
+      if (!localStorage.getItem("currentUser")) {
+        localStorage.setItem("currentUser", "User");
+      }
+      const user = localStorage.getItem("currentUser");
 
       // FUNCTION TO HANDLE THE COUNTDOWN TIMER
       function startCountdown(itemId, bidEndTime) {
@@ -1168,8 +1171,6 @@
             bidButton.disabled = true;
             bidButton.style.opacity = "0.5";
 
-            const user = localStorage.getItem("currentUser");
-
             if (item && item.highestBidder === user) {
               let wonItems = JSON.parse(localStorage.getItem("wonItems")) || [];
 
@@ -1180,8 +1181,6 @@
 
               showWinningNotification();
             }
-
-            resetBidsAfterAuction();
 
             return;
           }
@@ -1196,8 +1195,8 @@
         updateTimer();
       }
 
-      // FUNCTION TO SHOW PLACED BID NOTIFICATION
-      function showBidNotification(message, type = "info", duration = 3000) {
+      // FUNCTION TO SHOW NOTIFICATION
+      function showNotification(message, type = "info", duration = 3000) {
         const notification = document.createElement("div");
         notification.classList.add("notification", type);
         notification.textContent = message;
@@ -1223,9 +1222,13 @@
           const itemNames = userWonItems.map((item) => item.name).join(", ");
           const message = `🏆 You won the following vinyl(s): ${itemNames}!`;
 
-          showBidNotification(message, "success", 10000);
+          showNotification(message, "success", 10000);
 
-          localStorage.removeItem("wonItems");
+          setTimeout(() => {
+            localStorage.removeItem("wonItems");
+
+            resetBidsAfterAuction();
+          }, 10000);
         }
       }
 
