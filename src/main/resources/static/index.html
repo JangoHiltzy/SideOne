@@ -1128,7 +1128,8 @@
                 localStorage.setItem("wonItems", JSON.stringify(wonItems));
               }
 
-              showAuctionEndNotification();
+              finalizeAuction();
+              resetBidsAfterAuction();
             }
 
             return;
@@ -1228,8 +1229,6 @@
             localStorage.setItem("items", JSON.stringify(items));
             fetchItems();
           }
-
-          resetBidsAfterAuction();
         }, 5000);
       }
 
@@ -1255,59 +1254,44 @@
         }, duration);
       }
 
-      // FUNCTION TO SHOW AUCTION END NOTIFICATION
-      function showAuctionEndNotification() {
+      // FUNCTION TO FINALIZE AUCTION
+      function finalizeAuction() {
+        let items = JSON.parse(localStorage.getItem("items")) || [];
         const user = localStorage.getItem("currentUser");
 
-        let wonItems = JSON.parse(localStorage.getItem("wonItems")) || [];
-        let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+        let wonItems = [];
+        let lostItems = [];
 
-        const userWonItems = wonItems.filter(
-          (item) => item.highestBidder === user
-        );
-        const userLostItems = lostItems.filter(
-          (item) => item.highestBidder === "CPU_Bidder"
-        );
+        items.forEach((item) => {
+          if (item.bidEndTime && new Date().getTime() > item.bidEndTime) {
+            if (item.highestBidder === user) {
+              wonItems.push(item);
+            } else if (item.highestBidder === "CPU_Bidder") {
+              lostItems.push(item);
+            }
+          }
+        });
 
-        if (userWonItems.length > 0) {
-          const wonItemNames = userWonItems.map((item) => item.name).join(", ");
-          showNotification(
-            `🏆 You won following item(s): ${wonItemNames}!`,
-            "success",
-            5000
-          );
+        localStorage.setItem("wonItems", JSON.stringify(wonItems));
+        localStorage.setItem("lostItems", JSON.stringify(lostItems));
+
+        if (wonItems.length > 0) {
+          const wonItemNames = wonItems.map((item) => item.name).join(", ");
+          showNotification(`🏆 You won: ${wonItemNames}!`, "success", 5000);
         }
 
-        if (userLostItems.length > 0) {
-          const lostItemNames = userLostItems
-            .map((item) => item.name)
-            .join(", ");
-          showNotification(
-            `❌ You lost the following item(s): ${lostItemNames}.`,
-            "error",
-            5000
-          );
+        if (lostItems.length > 0) {
+          const lostItemNames = lostItems.map((item) => item.name).join(", ");
+          showNotification(`❌ You lost: ${lostItemNames}.`, "error", 5000);
         }
-
-        resetBidsAfterAuction();
       }
 
       // FUNCTION TO RESET ALL BIDS AFTER AUCTION ENDS
       function resetBidsAfterAuction() {
         let items = JSON.parse(localStorage.getItem("items")) || [];
-        const user = localStorage.getItem("currentUser");
-
-        let wonItems = JSON.parse(localStorage.getItem("wonItems")) || [];
-        let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
 
         items.forEach((item) => {
           if (item.bidEndTime && new Date().getTime() > item.bidEndTime) {
-            if (item.highestBidder === user) {
-              if (!wonItems.some((wonItem) => wonItem.id === item.id)) {
-                wonItems.push(item);
-              }
-            }
-
             item.currentBid = item.startingPrice;
             item.highestBidder = null;
             item.cpuMaxBid = null;
@@ -1315,8 +1299,6 @@
         });
 
         localStorage.setItem("items", JSON.stringify(items));
-        localStorage.setItem("wonItems", JSON.stringify(wonItems));
-        localStorage.setItem("lostItems", JSON.stringify(lostItems));
       }
 
       // FETCH AND DISPLAY ITEMS WHEN THE PAGE LOADS
