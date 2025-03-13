@@ -72,17 +72,48 @@
 
       .notification {
         position: fixed;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        text-align: center;
         padding: 20px 40px;
         border-radius: 5px;
-        font-size: 24px;
+        font-size: 16px;
         font-weight: bold;
         color: white;
         opacity: 1;
         transition: opacity 0.5s ease;
         z-index: 1000;
+        width: 400px;
+      }
+
+      .bid-notification {
+        top: 50%;
+      }
+
+      .auction-notifications {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .auction-notifications.won {
+        top: 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .auction-notifications.lost {
+        top: calc(70%);
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
       }
 
       .notification.success {
@@ -1077,7 +1108,7 @@
 
         items.forEach((item) => {
           if (!item.bidEndTime || new Date().getTime() > item.bidEndTime) {
-            item.bidEndTime = new Date().getTime() + 15 * 1000;
+            item.bidEndTime = new Date().getTime() + 50 * 1000;
           }
 
           const itemDiv = document.createElement("div");
@@ -1173,20 +1204,23 @@
                 item.highestBidder = user;
                 localStorage.setItem("items", JSON.stringify(items));
 
-                showNotification("✅ Bid placed successfully!", "success");
+                showBidNotification("✅ Bid placed successfully!", "success");
                 fetchItems();
                 cpuBid(itemId);
               } else {
-                showNotification(
+                showBidNotification(
                   "⚠️ Bid must be higher than the current bid!",
                   "error"
                 );
               }
             } else {
-              showNotification("❌ Bidding for this item has ended!", "error");
+              showBidNotification(
+                "❌ Bidding for this item has ended!",
+                "error"
+              );
             }
           } else {
-            showNotification("⚠️ Please enter a valid bid amount!", "error");
+            showBidNotification("⚠️ Please enter a valid bid amount!", "error");
           }
 
           bidInputToast.remove();
@@ -1240,16 +1274,45 @@
         }
       }
 
-      // FUNCTION TO SHOW NOTIFICATION
-      function showNotification(message, type = "info", duration = 1000) {
+      // FUNCTION TO SHOW BID NOTIFICATION
+      function showBidNotification(message, type = "info", duration = 3000) {
         const notification = document.createElement("div");
-        notification.classList.add("notification", type);
+        notification.classList.add("notification", "bid-notification", type);
         notification.textContent = message;
 
         document.body.appendChild(notification);
 
         setTimeout(() => {
-          notification.style.opacity = "0";
+          notification.classList.add("fade-out");
+          setTimeout(() => notification.remove(), 500);
+        }, duration);
+      }
+
+      // FUNCTION TO SHOW AUCTION END NOTIFICATION
+      function showAuctionNotification(
+        message,
+        type = "success",
+        duration = 5000
+      ) {
+        let containerClass = type === "success" ? "won" : "lost";
+
+        let container = document.querySelector(
+          `.auction-notifications.${containerClass}`
+        );
+        if (!container) {
+          container = document.createElement("div");
+          container.classList.add("auction-notifications", containerClass);
+          document.body.appendChild(container);
+        }
+
+        const notification = document.createElement("div");
+        notification.classList.add("notification", type);
+        notification.textContent = message;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+          notification.classList.add("fade-out");
           setTimeout(() => notification.remove(), 500);
         }, duration);
       }
@@ -1277,12 +1340,20 @@
 
         if (wonItems.length > 0) {
           const wonItemNames = wonItems.map((item) => item.name).join(", ");
-          showNotification(`🏆 You won: ${wonItemNames}!`, "success", 5000);
+          showAuctionNotification(
+            `🏆 You won: ${wonItemNames}!`,
+            "success",
+            5000
+          );
         }
 
         if (lostItems.length > 0) {
           const lostItemNames = lostItems.map((item) => item.name).join(", ");
-          showNotification(`❌ You lost: ${lostItemNames}.`, "error", 5000);
+          showAuctionNotification(
+            `❌ You lost: ${lostItemNames}.`,
+            "error",
+            5000
+          );
         }
       }
 
