@@ -1204,9 +1204,9 @@
                 item.highestBidder = user;
                 localStorage.setItem("items", JSON.stringify(items));
 
-                showBidNotification("✅ Bid placed successfully!", "success");
+                showBidNotification("😊 Bid placed successfully!", "success");
                 fetchItems();
-                cpuBid(itemId);
+                cpuCounterBid(itemId);
               } else {
                 showBidNotification(
                   "⚠️ Bid must be higher than the current bid!",
@@ -1215,7 +1215,7 @@
               }
             } else {
               showBidNotification(
-                "❌ Bidding for this item has ended!",
+                "😔 Bidding for this item has ended!",
                 "error"
               );
             }
@@ -1243,27 +1243,34 @@
 
         if (!item.highestBidder || item.highestBidder === "CPU_Bidder") return;
 
-        setTimeout(() => {
-          const userBid = item.currentBid;
-          let cpuBidAmount = userBid + Math.floor(Math.random() * 10) + 1;
+        const userBid = item.currentBid;
+        let cpuBidAmount = userBid + Math.floor(Math.random() * 10) + 1;
 
-          if (cpuBidAmount <= item.cpuMaxBid) {
-            item.currentBid = cpuBidAmount;
-            item.highestBidder = "CPU_Bidder";
+        if (cpuBidAmount <= item.cpuMaxBid) {
+          item.currentBid = cpuBidAmount;
+          item.highestBidder = "CPU_Bidder";
 
-            if (item.highestBidder === "CPU_Bidder") {
-              let lostItems =
-                JSON.parse(localStorage.getItem("lostItems")) || [];
-              if (!lostItems.some((lostItem) => lostItem.id === item.id)) {
-                lostItems.push(item);
-                localStorage.setItem("lostItems", JSON.stringify(lostItems));
-              }
+          if (item.highestBidder === "CPU_Bidder") {
+            let lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+            if (!lostItems.some((lostItem) => lostItem.id === item.id)) {
+              lostItems.push(item);
+              localStorage.setItem("lostItems", JSON.stringify(lostItems));
             }
-
-            localStorage.setItem("items", JSON.stringify(items));
-            fetchItems();
           }
-        }, 5000);
+
+          localStorage.setItem("items", JSON.stringify(items));
+          fetchItems();
+        }
+      }
+
+      // FUNCTION TO SCHEDULE THE CPU COUNTER BID
+      function cpuCounterBid(itemId) {
+        const randomDelay =
+          Math.floor(Math.random() * (25000 - 5000 + 1)) + 5000;
+
+        setTimeout(() => {
+          cpuBid(itemId);
+        }, randomDelay);
       }
 
       // FUNCTION TO HANDLE CPU MAX BID
@@ -1341,7 +1348,7 @@
         if (wonItems.length > 0) {
           const wonItemNames = wonItems.map((item) => item.name).join(", ");
           showAuctionNotification(
-            `🏆 You won: ${wonItemNames}!`,
+            `😊 You won: ${wonItemNames}!`,
             "success",
             5000
           );
@@ -1350,7 +1357,7 @@
         if (lostItems.length > 0) {
           const lostItemNames = lostItems.map((item) => item.name).join(", ");
           showAuctionNotification(
-            `❌ You lost: ${lostItemNames}.`,
+            `😔 You lost: ${lostItemNames}.`,
             "error",
             5000
           );
