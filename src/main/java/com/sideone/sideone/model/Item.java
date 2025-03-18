@@ -1,6 +1,15 @@
 package com.sideone.sideone.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Item {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String artist;
@@ -9,8 +18,7 @@ public class Item {
     private String image;
 
     // CONSTRUCTOR TO INITIALIZE ALL FIELDS
-    public Item(Long id, String name, String artist, double startingPrice, double currentBid, String image) {
-        this.id = id;
+    public Item(String name, String artist, double startingPrice, double currentBid, String image) {
         this.name = name;
         this.artist = artist;
         this.startingPrice = startingPrice;

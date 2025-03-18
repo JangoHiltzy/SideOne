@@ -1,27 +1,31 @@
 package com.sideone.sideone.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sideone.sideone.model.Item;
+import com.sideone.sideone.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
 public class ItemService {
 
         @Autowired
-        private ResourceLoader resourceLoader;
+        private ItemRepository itemRepository;
 
-        public List<Item> getItems() throws IOException {
-                Resource resource = resourceLoader.getResource("classpath:data/items.json");
+        public List<Item> getItems() {
+                return itemRepository.findAll();
+        }
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                return objectMapper.readValue(resource.getInputStream(), new TypeReference<List<Item>>() {
-                });
+        public Item saveItem(Item item) {
+                return itemRepository.save(item);
+        }
+
+        public Item getItemById(Long id) {
+                return itemRepository.findById(id).orElse(null);
+        }
+
+        public void deleteItem(Long id) {
+                itemRepository.deleteById(id);
         }
 }
