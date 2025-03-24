@@ -1,0 +1,232 @@
+@font-face {
+  font-family: "Roboto";
+  src: url("/fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  background: url("/images/music.jpg") fixed;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #000000;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+  background-color: #000000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+}
+
+img {
+  border: 3px solid #ffffff;
+  max-width: 100%;
+  height: auto;
+}
+
+.item {
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.item h2 {
+  margin-top: 0;
+}
+
+.item-details {
+  margin-bottom: 10px;
+}
+
+.item button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.item button:hover {
+  background-color: #218838;
+}
+
+.notification {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 20px 40px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  z-index: 1000;
+  width: 400px;
+}
+
+.bid-notification {
+  top: 50%;
+}
+
+.auction-notifications {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auction-notifications.won {
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.auction-notifications.lost {
+  top: calc(70%);
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+.notification.fade-out {
+  opacity: 0;
+}
+
+.bid-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 300px;
+  max-width: 90%;
+  z-index: 1000;
+}
+
+.bid-toast input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+.bid-toast button {
+  cursor: pointer;
+  padding: 8px 12px;
+  border: none;
+  font-size: 14px;
+}
+
+#confirmBidBtn {
+  background: #4caf50;
+  color: white;
+}
+
+#cancelBidBtn {
+  background: #f44336;
+  color: white;
+}
+
+.bid-toast input {
+  width: 100%;
+  padding: 5px;
+}
+
+.bid-toast button {
+  cursor: pointer;
+  padding: 5px 10px;
+  border: none;
+  transition: opacity 0.3s ease;
+}
+
+.bid-toast button:hover {
+  opacity: 0.7;
+}
+
+#confirmBidBtn {
+  background: #4caf50;
+  color: white;
+}
+
+#cancelBidBtn {
+  background: #f44336;
+  color: white;
+}
+
+footer {
+  background: black;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+footer p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.socials {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.socials li {
+  margin-left: 10px;
+}
+
+.socials img {
+  width: 28px;
+  border: none;
+}
+
+.socials img:hover {
+  opacity: 0.5;
+}
+
+.socials a {
+  border: none;
+  text-decoration: none;
+}
