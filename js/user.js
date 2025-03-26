@@ -4,3 +4,5 @@ function initializeUser() {
     localStorage.setItem("currentUser", "User");
   }
 }
+
+initializeUser();
