@@ -15,9 +15,12 @@ function fetchItems() {
 
   let items = JSON.parse(localStorage.getItem("items")) || [];
 
+  let updated = false;
+
   items.forEach((item) => {
-    if (!item.bidEndTime) {
-      item.bidEndTime = new Date().getTime() + 0 * 60 * 1000;
+    if (!item.bidEndTime || new Date().getTime() > item.bidEndTime) {
+      item.bidEndTime = new Date().getTime() + 5 * 60 * 1000;
+      updated = true;
     }
 
     const itemDiv = document.createElement("div");
@@ -39,10 +42,10 @@ function fetchItems() {
 
     itemsList.appendChild(itemDiv);
 
-    localStorage.setItem("items", JSON.stringify(items));
-
-    if (item.bidEndTime) {
-      startCountdown(item.id, item.bidEndTime);
-    }
+    startCountdown(item.id, item.bidEndTime);
   });
+
+  if (updated) {
+    localStorage.setItem("items", JSON.stringify(items));
+  }
 }

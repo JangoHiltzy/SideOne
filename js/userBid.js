@@ -28,6 +28,7 @@ function placeBid(itemId) {
 
           showBidNotification("😊 Bid placed successfully!", "success");
           fetchItems();
+          cpuCounterBid(itemId);
         } else {
           showBidNotification(
             "⚠️ Bid must be higher than the current bid!",

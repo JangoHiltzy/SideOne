@@ -6,13 +6,6 @@ function startCountdown(itemId, bidEndTime) {
   let items = JSON.parse(localStorage.getItem("items")) || [];
   let item = items.find((item) => item.id === itemId);
 
-  if (new Date().getTime() > bidEndTime) {
-    timerElement.textContent = "Bidding Ended";
-    bidButton.disabled = true;
-    bidButton.style.opacity = "0.5";
-    return;
-  }
-
   function updateTimer() {
     const now = new Date().getTime();
     const timeLeft = bidEndTime - now;

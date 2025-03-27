@@ -1,3 +1,4 @@
+// APP INITIALIZATION
 document.addEventListener("DOMContentLoaded", () => {
   initializeUser();
   initializeItems();
